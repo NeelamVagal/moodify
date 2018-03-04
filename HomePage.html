@@ -12,69 +12,27 @@ function getLocation(){
 		xmlhttp.send();
 		jsondoc=xmlhttp.responseText;
 		var obj=JSON.parse(jsondoc);
-		//document.getElementById("latitude").value=obj.latitude;
-		//document.getElementById("longitude").value=obj.longitude;
-		//var location=http://maps.googleapis.com/maps/api/geocode/json?latlng=obj.latitude,obj.longitude&sensor=true;
 		return obj;
 }
  function processImage() {
 	    var obj = getLocation();
-        // **********************************************
-        // *** Update or verify the following values. ***
-        // **********************************************
-
-        // Replace the subscriptionKey string value with your valid subscription key.
-        var subscriptionKey = "126026bc19f7430596a8a890e0bcc286";
-
-        // Replace or verify the region.
-        //
-        // You must use the same region in your REST API call as you used to obtain your subscription keys.
-        // For example, if you obtained your subscription keys from the westus region, replace
-        // "westcentralus" in the URI below with "westus".
-        //
-        // NOTE: Free trial subscription keys are generated in the westcentralus region, so if you are using
-        // a free trial subscription key, you should not need to change this region.
         var uriBase = "https://westus.api.cognitive.microsoft.com/face/v1.0/detect";
-
-        // Request parameters.
         var params = {
             "returnFaceId": "true",
             "returnFaceLandmarks": "false",
             "returnFaceAttributes": "emotion",
         };
-
-        // Display the image.
-		//var sourceImageUrl = "https://www.dropbox.com/s/51fx64bnpi9dlwh/selfie.jpg";
 		var sourceImageUrl = document.getElementById("snap").src;
-		//alert(sourceImageUrl);
-		
-      // var sourceImageUrl = "https://upload.wikimedia.org/wikipedia/commons/c/c3/RH_Louise_Lillian_Gish.jpg";
-	   /*(document.getElementById("snap").src).substring(8);
-		
-		console.log(document.getElementById("snap").src);
-		 alert(sourceImageUrl);
-        document.querySelector("#snap").src = sourceImageUrl;
-	   alert(uriBase + "?" + $.param(params));
-*/
-        // Perform the REST API call.
         $.ajax({
             url: uriBase + "?" + $.param(params),
-
-            // Request headers.
             beforeSend: function(xhrObj){
                 xhrObj.setRequestHeader("Content-Type","application/json");
                 xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
             },
-
             type: "POST",
-
-            // Request body.
             data: '{"url": ' + '"' + sourceImageUrl  + '"}',
         })
-
         .done(function(data) {
-            // Show formatted JSON on webpage.
-           //alert(JSON.stringify(data, null, 2));
 		   var result=data[0].faceAttributes.emotion;
 		   var moods={};
 		   var max=0;
@@ -85,10 +43,7 @@ function getLocation(){
 		   max_mood=key;
 		   }
 			   moods[key]=result[key];
-			   //alert(key);
-			   //alert(result[key]);
 			}
-			
 			var text="You look to be "+max*100+"% "+max_mood+" today. <br> How would you like to feel?<br>"+
 			"<form method='get' action='Results.html'>  <input type='radio' name='mood' value='anger'> Anger<br>"+
 			"<input type='radio' name='mood' value='contempt'> Contempt<br>  <input type='radio' name='mood' value='fear'> Fear<br>"+
@@ -98,21 +53,14 @@ function getLocation(){
 			"<input type='hidden' name='lat' value='"+obj.latitude+"'> <input type='hidden' name='long' value='"+obj.longitude+"'>"
 			"<input type='hidden' name='max_mood' value='"+max_mood+"'> <input type='hidden' name='max' value='"+max+"'></form>";
 			document.getElementById("opt").innerHTML=text;
-			//alert(max_mood);
-			//alert(max);
         })
-		
-
         .fail(function(jqXHR, textStatus, errorThrown) {
-            // Display error message.
             var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
             errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
                 jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
             alert(errorString);
         });
     };
-
-
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="http://code.highcharts.com/maps/highmaps.js"></script>
@@ -132,7 +80,7 @@ $(function () {
         chart.redraw();
     });
 
-    // Prepare demo data
+    
     var data = [
         {
             "hc-key": "dz",
@@ -975,12 +923,21 @@ $(function () {
         }]
     });
 });
-
+ function updateImg()
+ {
+ var imgurl = document.getElementById("imgUrl").value;
+ var image = document.getElementById("snap");
+ image.src = imgurl;
+ }
 </script>
 <body>
 <div id="container"></div>
-<img id="snap" src="https://upload.wikimedia.org/wikipedia/commons/c/c3/RH_Louise_Lillian_Gish.jpg" alt="your image" onclick="processImage()" />
-<!-- Post Info -->
+<div>Please enter Image URl with .pgn or .jpeg extensions and click on the image that appers <br>
+<input type="url" id="imgUrl" onblur="updateImg()"></input>
+</div>
+
+<img id="snap" onclick="processImage()" style="max-width:400px;max-height:400px"/>
+
 <div style='position:fixed;bottom:0;left:0;    
             background:lightgray;width:100%;'>
 <div>
